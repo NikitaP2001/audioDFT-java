@@ -1,12 +1,17 @@
+package audio;
+
+import java.io.File;
+
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.SourceDataLine;
+import javax.sound.sampled.LineUnavailableException;
 
 public class Player {
 
         public void playMusic(String fileName) {
-                File audioFile = new File(audioFileName);
+                File audioFile = new File(fileName);
                 new Thread(new Runnable() {
                         public void run() {
                                 playOneChannel(audioFile);
@@ -16,7 +21,7 @@ public class Player {
 
 	private static void playOneChannel(File audioFile) {
 		try {
-			byte[] content = readWavContent(audioFile);
+			byte[] content = Reader.readWavContent(audioFile);
 			playBytes(content);
 		} catch (Exception ex) {
 			System.out.println("unable to play");

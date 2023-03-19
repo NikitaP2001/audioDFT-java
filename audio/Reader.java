@@ -1,3 +1,5 @@
+package audio;
+
 import java.io.File;
 import java.io.ByteArrayOutputStream;
 import javax.sound.sampled.AudioInputStream;

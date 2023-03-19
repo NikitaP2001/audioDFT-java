@@ -23,11 +23,10 @@ class GraphingPanel extends JPanel {
 		setBorder(blackline);
 
 		updateStyle();
-
-		drawShape();
 	}
 
-	private void drawShape() {
+	void drawShape() {
+
 		Path2D path = new Path2D.Float();
 		path.moveTo(20, 20);
 		path.lineTo(100, 100);
@@ -35,7 +34,8 @@ class GraphingPanel extends JPanel {
 		path.lineTo(120, 120);
 		path.closePath();
 		Graphics2D panelGraphics = (Graphics2D)getGraphics();
-		panelGraphics.draw(path);
+		if (panelGraphics != null)
+			panelGraphics.draw(path);
 	}
 
 	private void updateStyle() {
