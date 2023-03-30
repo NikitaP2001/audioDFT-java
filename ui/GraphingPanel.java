@@ -1,9 +1,8 @@
 package ui;
 
 import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.geom.Path2D;
-import java.awt.geom.PathIterator;
+import java.awt.GridLayout;
+import java.awt.geom.Point2D;
 
 import javax.swing.JPanel;
 import javax.swing.BorderFactory;
@@ -13,33 +12,28 @@ import javax.swing.border.TitledBorder;
 import ui.ThemeProvider.Element;
 
 class GraphingPanel extends JPanel {
-
+	private Plot plot = new Plot(100, 100);
 	TitledBorder blackline = BorderFactory.createTitledBorder("Graphing Panel");
 
 	public GraphingPanel(String title) {
-
-		blackline.setTitleFont(new Font("Arial", Font.ITALIC, 32));
+		blackline.setTitleFont(new Font("Arial", Font.ITALIC, 16));
 		blackline.setTitle(title);
 		setBorder(blackline);
-
+		setLayout(new GridLayout(1, 1));
+		add(plot);
 		updateStyle();
+
+
+		plot.setViewPos(new Point2D.Double(0, -50));
+		double[] pltData = {10, 20, 30, 40, 50, 45, 30, 20, -10, -20};
+		plot.addPoints(pltData);
 	}
 
-	void drawShape() {
-
-		Path2D path = new Path2D.Float();
-		path.moveTo(20, 20);
-		path.lineTo(100, 100);
-		path.lineTo(100, 120);
-		path.lineTo(120, 120);
-		path.closePath();
-		Graphics2D panelGraphics = (Graphics2D)getGraphics();
-		if (panelGraphics != null)
-			panelGraphics.draw(path);
+	public void draw() {
+		plot.draw();
 	}
 
 	private void updateStyle() {
-
 		setBackground(ThemeProvider.getColor(Element.Background));
 		blackline.setTitleColor(ThemeProvider.getColor(ThemeProvider.Element.Text));
 	}

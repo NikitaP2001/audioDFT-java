@@ -1,8 +1,8 @@
 package ui;
 
-import java.io.InterruptedIOException;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+
 import javax.swing.JFrame;
 
 public class WavGraphing extends JFrame {    
@@ -33,9 +33,9 @@ public class WavGraphing extends JFrame {
 
 		try {
 			while (true) {
-				wavePlot.drawShape();
+				wavePlot.draw();
 
-				Thread.sleep(1);
+				Thread.sleep(5);
 			}
 
 		} catch (InterruptedException ex) {

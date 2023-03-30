@@ -8,6 +8,7 @@ class ThemeProvider {
         public enum Element { 
                 Text, 
                 Background,
+                PlotCurve,
         }
 
         public enum Theme { 
@@ -23,6 +24,7 @@ class ThemeProvider {
                 TreeMap<Element, Color> darkThemeMap = new TreeMap<>();
                 darkThemeMap.put(Element.Text, Color.white);
                 darkThemeMap.put(Element.Background, Color.darkGray);
+                darkThemeMap.put(Element.PlotCurve, Color.green);
 
                 themeMap.put(Theme.Dark, darkThemeMap);
         }
