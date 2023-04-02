@@ -4,9 +4,14 @@ import java.util.Arrays;
 import java.awt.Graphics2D;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Shape;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
 import java.awt.geom.AffineTransform;
 
 import javax.swing.JPanel;
@@ -23,28 +28,31 @@ class Plot extends JPanel {
 	private Point2D viewPoint = new Point2D.Double(0, 0);
 	private Path2D path = new Path2D.Double();
 
+	private BufferedImage buffer;
+
 	private double[] shownPoints = new double[0];
 
 	public Plot(double width, double height) {
 		virtHeight = height;
 		virtWidth = width;
+		setOpaque(false);
 		updateStyle();
 	}
 
-	void setDim(double width, double height) {
+	public void setDim(double width, double height) {
 		virtHeight = height;
 		virtWidth = width;
 	}
 
-	void setViewPos(Point2D leftBottom) {
+	public void setViewPos(Point2D leftBottom) {
 		viewPoint = leftBottom;
 	}
 
-	void setDiscretization(int nPoints) {
+	public void setDiscretization(int nPoints) {
 		pointsInView = nPoints;
 	}
 
-	void addPoints(double[] points) {
+	public void addPoints(double[] points) {
 		double step = virtWidth / pointsInView;
 		double oXPos = viewPoint.getX();
 		if (points.length == 0 || points.length > pointsInView)
@@ -62,13 +70,33 @@ class Plot extends JPanel {
 		}
 	}
 
-	void draw() {
+	private void clearImage(BufferedImage bufferedImage) {
+		Graphics2D g = bufferedImage.createGraphics();
+		g.setBackground(BG_TRANSPARENT);
+		g.clearRect(0, 0, bufferedImage.getWidth(),
+		bufferedImage.getHeight());
+		g.dispose();
+    	}
+
+	public void draw() {
+		if (buffer == null)
+			buffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+		clearImage(buffer);
+		Graphics2D bufGraphics = (Graphics2D)buffer.getGraphics();
+		bufGraphics.setStroke(new BasicStroke(curveWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+		bufGraphics.setColor(ThemeProvider.getColor(Element.PlotCurve));
 		AffineTransform transform = getTransform();
-		Graphics2D plotGraphics = (Graphics2D)getGraphics();
-		plotGraphics.setStroke(new BasicStroke(curveWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-		plotGraphics.setColor(ThemeProvider.getColor(Element.PlotCurve));
 		Shape plotShape = path.createTransformedShape(transform);
-		plotGraphics.draw(plotShape);
+		bufGraphics.draw(plotShape);
+		repaint();
+	}
+
+	@Override
+	protected void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		Graphics2D g2d = (Graphics2D)g;
+		g2d.drawImage(buffer, 0, 0, null);
+		g2d.dispose();
 	}
 
 	private static double[] appendWithOverlap(double[] first, double[] second, int maxLength) {

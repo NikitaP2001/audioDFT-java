@@ -9,7 +9,7 @@ import javax.sound.sampled.SourceDataLine;
 
 public class Player {
 	AudioFormat playFormat;
-	SourceDataLine sourcedataline;
+	SourceDataLine soundLine;
 
 	public Player(AudioFormat format) {
 		try {
@@ -17,9 +17,9 @@ public class Player {
 			DataLine.Info info = new DataLine.Info(SourceDataLine.class, playFormat);
 			if (!AudioSystem.isLineSupported(info))
 				throw new Exception("Line not supported");
-			sourcedataline = (SourceDataLine)AudioSystem.getLine(info);
-			sourcedataline.open(playFormat);
-			sourcedataline.start();
+			soundLine = (SourceDataLine)AudioSystem.getLine(info);
+			soundLine.open(playFormat);
+			soundLine.start();
 		} catch (Exception ex) {
 			System.out.println("Play failed: " + ex.getMessage());
 			System.exit(0);
@@ -28,7 +28,7 @@ public class Player {
 
 	public void play(SoundTrack track) {
 		byte[] soundData = formDataLine(track);
-		sourcedataline.write(soundData, 0, soundData.length);
+		soundLine.write(soundData, 0, soundData.length);
 	}
 
 	private byte[] formDataLine(SoundTrack track) {
@@ -81,6 +81,6 @@ public class Player {
         
 	protected void finilize() throws Throwable {
 		soundLine.drain();
-		sourcedataline.close();
+		soundLine.close();
 	}
 }
