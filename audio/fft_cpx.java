@@ -1,8 +1,8 @@
 package audio;
 
 public class fft_cpx {
-        double real = 0;
-        double imag = 0;
+        public double real = 0;
+        public double imag = 0;
 
         public void cexp(double phase) {
                 real = Math.cos(phase);

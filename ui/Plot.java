@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Shape;
+import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.geom.Path2D;
@@ -33,6 +34,18 @@ class Plot extends JPanel {
 	private double[] shownPoints = new double[0];
 
 	public Plot(double width, double height) {
+		addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+				int width = getWidth();
+				int height = getHeight();
+				BufferedImage newImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+				Graphics2D g2d = newImage.createGraphics();
+				g2d.drawImage(buffer, 0, 0, width, height, null);
+				g2d.dispose();
+				buffer = newImage;
+			}
+		});
 		virtHeight = height;
 		virtWidth = width;
 		setOpaque(false);

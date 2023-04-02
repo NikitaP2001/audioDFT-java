@@ -3,6 +3,7 @@ package ui;
 import java.io.IOException;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import java.awt.Dimension;
@@ -50,12 +51,8 @@ public class WavGraphing extends JFrame {
 			playFormat = new AudioFormat(format.getEncoding(), format.getSampleRate(), 
 			format.getSampleSizeInBits(), format.getChannels(), format.getFrameSize(), format.getFrameRate(), false);
 
-			tracks = readAudioFile(8192);
+			tracks = readAudioFile(2048);
 
-			/*
-			
-			*/
-			
 		} catch (UnsupportedAudioFileException ex) {
 			System.out.println("Unsupported: " + ex.getMessage());
 		} catch (IOException ex) {
@@ -77,18 +74,20 @@ public class WavGraphing extends JFrame {
 			while (true) {
 
 				for (SoundTrack track : tracks) {
-					int[] data = track.channels.get(0);
+					int[] timedata = track.channels.get(0);
+					fft_cpx[] result = inst.forward(timedata);
+					double[] dbFreq = fft.dbFromCpx(Arrays.copyOf(result, result.length / 2));
 
-					fft_cpx[] result = inst.forward(data);
-					double[] ampFreq = fft.amplitude(result);
-					var th = drawSampleAsync(ampFreq);
-					th.start();
+					var thFreq = drawFreqAsync(dbFreq);
+					var thTime = drawTimeAsync(timedata);
+					thFreq.start();
+					thTime.start();
 
 					
-					// int[] orig = inst.inverse(result);
 					pl.play(track);
 
-					th.join();
+					thFreq.join();
+					thTime.join();
 				}
 
 				Thread.sleep(5);
@@ -100,14 +99,25 @@ public class WavGraphing extends JFrame {
 		
 	}
 
-	private Thread drawSampleAsync(double[] data) {
+	private Thread drawFreqAsync(double[] freqData) {
 		var th = new Thread(new Runnable() {
 			public void run() {
 				
-				for (int i = 0; i < data.length; i++) {
-					data[i] = Math.log10(data[i]);
-				}
-				wavePlot.sampleToQueue(data);	
+				double[] sFreqData = fft.movingAverage(freqData, 10);
+				frequencyPlot.sampleToQueue(sFreqData);	
+				frequencyPlot.draw();
+			}
+		});
+		return th;
+	}
+
+	private Thread drawTimeAsync(int[] timedata) {
+		var th = new Thread(new Runnable() {
+			public void run() {
+				double[] dtd = Arrays.stream(timedata).asDoubleStream().toArray();
+				
+				dtd = fft.movingAverage(dtd, 10);
+				wavePlot.sampleToQueue(dtd);	
 				wavePlot.draw();
 			}
 		});

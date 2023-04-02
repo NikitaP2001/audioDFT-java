@@ -17,14 +17,57 @@ public class fft  {
 
         public static final double PI = Math.PI;
 
-        public static double[] amplitude(fft_cpx[] freq) {
+        public static double[] dbFromCpx(fft_cpx[] freq) {
                 double[] amp = new double[freq.length];
                 for (int i = 0; i < freq.length; i++) {
                         double re = freq[i].real;
                         double im = freq[i].imag;
-                        amp[i] = Math.sqrt(re * re + im * im) / freq.length;
+                        amp[i] = 20 * Math.abs(Math.log10(Math.sqrt(re * re + im * im)));
                 }
                 return amp;
+        }
+
+        public static double[] movingAverage(double[] arr, int wndSize) {
+                int n = arr.length;
+                double[] result = new double[n];
+
+                for (int i = 0; i < n; i++) {
+                        double sum = 0;
+                        int count = 0;
+                        int wndBeg = Math.max(0, i - wndSize + 1);
+                        int wndEnd = Math.min(n - 1, i + wndSize - 1);
+                        for (int j = wndBeg; j <= wndEnd; j++) {
+                                sum += arr[j];
+                                count++;
+                        }
+                        result[i] = sum / count;
+                }
+                return result;
+        }
+
+        public static fft_cpx[] movingAverage(fft_cpx[] arr, int windowSize) {
+        int n = arr.length;
+        fft_cpx[] result = new fft_cpx[n];
+
+        for (int i = 0; i < n; i++) {
+                double sumReal = 0.0;
+                double sumImag = 0.0;
+
+                int count = 0;
+                int wndBeg = Math.max(0, i - windowSize + 1);
+                int wndEnd = Math.min(n - 1, i + windowSize - 1);
+                for (int j = wndBeg; j <= wndEnd; j++) {
+                        sumReal += arr[j].real;
+                        sumImag += arr[j].imag;
+                        count++;
+                }
+
+                result[i] = new fft_cpx();
+                result[i].real = sumReal / count;
+                result[i].imag = sumImag / count;
+        }
+
+        return result;
         }
 
         public fft_cpx[] forward(int[] x) {

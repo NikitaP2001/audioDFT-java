@@ -17,6 +17,7 @@ class GraphingPanel extends JPanel {
 	private Plot plot = new Plot(100, pltHeight);
 	private TitledBorder blackline = BorderFactory.createTitledBorder("Graphing Panel");
 	private double[] sample;
+	private int disk = 1000;
 
 	public GraphingPanel(String title) {
 		blackline.setTitleFont(new Font("Arial", Font.ITALIC, 16));
@@ -30,16 +31,25 @@ class GraphingPanel extends JPanel {
 	}
 
 	public void sampleToQueue(double[] values) {
+		if (disk != values.length) {
+			disk = values.length;
+			plot.setDiscretization(disk);
+		}
 		sample = values;
 	}
 
 	public void draw() {
 		if (sample != null && sample.length != 0) {
-			double minVal = Arrays.stream(sample).min().getAsDouble();
 			double maxVal = Arrays.stream(sample).max().getAsDouble();
-			double newHeight = (maxVal - minVal) * 1.5;
-			if (newHeight / pltHeight > 1.5 || newHeight / pltHeight < 0.75)
-				plot.setDim(100, newHeight);
+			double minVal = Arrays.stream(sample).min().getAsDouble();
+			double newHeight = maxVal - minVal;
+			if (newHeight / pltHeight > 1.25 || newHeight / pltHeight < 0.85) {
+				pltHeight = newHeight * 3;
+				plot.setDim(100, newHeight * 1.5);
+
+			}
+
+			plot.setViewPos(new Point2D.Double(0, minVal));
 
 			plot.addPoints(sample);
 			plot.draw();
