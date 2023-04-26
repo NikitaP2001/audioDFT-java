@@ -103,7 +103,7 @@ public class WavGraphing extends JFrame {
 		var th = new Thread(new Runnable() {
 			public void run() {
 				
-				double[] sFreqData = fft.movingAverage(freqData, 10);
+				double[] sFreqData = fft.movingAverage(freqData, 4);
 				frequencyPlot.sampleToQueue(sFreqData);	
 				frequencyPlot.draw();
 			}

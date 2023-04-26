@@ -3,7 +3,7 @@ import ui.WavGraphing;
 
 class Application {
 
-	private String audioFileName = "";
+	private String audioFileName = "sample.wav";
 
 	private WavGraphing graphFrame;
 

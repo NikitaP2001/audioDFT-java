@@ -290,22 +290,13 @@ public class fft  {
                 }
         } 
 
-        private void work(int inPos, int outPos, 
-        int fstride, int fPos) {
+        private void work(int inPos, int outPos, int fstride, int fPos) {
 
                 int p = (fPos != factors.size()) ? factors.get(fPos++) : 0;
                 int m = (fPos != factors.size()) ? factors.get(fPos++) : 0;
                 int foutEnd = outPos + p * m;
-
-                if (fstride == 1 && p <= 5 && m != 1) {
-
-                        for (int k = 0; k < p; k++) {
-                                int newOutPos = outPos + k * m;
-                                int newInPos = inPos + fstride * k;
-                                work(newInPos, newOutPos, fstride * p, fPos);
-                        }
-
-                } else if (m == 1) {
+               
+                if (m == 1) {
                         for (int pos = outPos; pos < foutEnd; pos++, inPos += fstride)
                                 out[pos] = in[inPos];
                 } else {
